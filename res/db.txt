@@ -1,0 +1,158 @@
+-- Table dbo.MaterialType
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS MaterialType (
+  ID SERIAL PRIMARY KEY,
+  Title VARCHAR(50) NOT NULL,
+  DefectedPercent DOUBLE PRECISION NOT NULL);
+
+-- ----------------------------------------------------------------------------
+-- Table dbo.Material
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS Material (
+  ID SERIAL PRIMARY KEY,
+  Title VARCHAR(100) NOT NULL,
+  CountInPack INT NOT NULL,
+  Unit VARCHAR(10) NOT NULL,
+  CountInStock DOUBLE PRECISION NULL,
+  MinCount DOUBLE PRECISION NOT NULL,
+  Description TEXT NULL,
+  Cost NUMERIC(10,2) NOT NULL,
+  Image VARCHAR(100) NULL,
+  MaterialTypeID INT NOT NULL,
+  CONSTRAINT FK_Material_MaterialType
+    FOREIGN KEY (MaterialTypeID)
+    REFERENCES MaterialType (ID)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE);
+
+-- ----------------------------------------------------------------------------
+-- Table dbo.MaterialSupplier
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS MaterialSupplier (
+  MaterialID INT NOT NULL,
+  SupplierID INT NOT NULL,
+  PRIMARY KEY (MaterialID, SupplierID),
+  CONSTRAINT FK_MaterialSupplier_Supplier
+    FOREIGN KEY (SupplierID)
+    REFERENCES Supplier (ID)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT FK_MaterialSupplier_Material
+    FOREIGN KEY (MaterialID)
+    REFERENCES Material (ID)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE);
+
+-- ----------------------------------------------------------------------------
+-- Table dbo.ProductMaterial
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS ProductMaterial (
+  ProductID INT NOT NULL,
+  MaterialID INT NOT NULL,
+  Count DOUBLE PRECISION NULL,
+  PRIMARY KEY (ProductID, MaterialID),
+  CONSTRAINT FK_ProductMaterial_Material
+    FOREIGN KEY (MaterialID)
+    REFERENCES Material (ID)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT FK_ProductMaterial_Product
+    FOREIGN KEY (ProductID)
+    REFERENCES Product (ID)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+-- ----------------------------------------------------------------------------
+-- Table dbo.Agent
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS Agent (
+  ID SERIAL PRIMARY KEY,
+  Title VARCHAR(150) NOT NULL,
+  AgentTypeID INT NOT NULL,
+  Address VARCHAR(300) NULL,
+  INN VARCHAR(12) NOT NULL,
+  KPP VARCHAR(9) NULL,
+  DirectorName VARCHAR(100) NULL,
+  Phone VARCHAR(20) NOT NULL,
+  Email VARCHAR(255) NULL,
+  Logo VARCHAR(100) NULL,
+  Priority INT NOT NULL,
+  CONSTRAINT FK_Agent_AgentType
+    FOREIGN KEY (AgentTypeID)
+    REFERENCES AgentType (ID)
+        ON DELETE CASCADE
+    ON UPDATE CASCADE);
+-- ----------------------------------------------------------------------------
+-- Table dbo.ProductSale
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS ProductSale (
+  ID SERIAL PRIMARY KEY,
+  AgentID INT NOT NULL,
+  ProductID INT NOT NULL,
+  SaleDate DATE NOT NULL,
+  ProductCount INT NOT NULL,
+  CONSTRAINT FK_ProductSale_Agent
+    FOREIGN KEY (AgentID)
+    REFERENCES Agent (ID)
+        ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT FK_ProductSale_Product
+    FOREIGN KEY (ProductID)
+    REFERENCES Product (ID)
+        ON DELETE CASCADE
+    ON UPDATE CASCADE);
+
+
+-- ----------------------------------------------------------------------------
+-- Table dbo.Shop
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS Shop (
+  ID SERIAL PRIMARY KEY,
+  Title VARCHAR(150) NOT NULL,
+  Address VARCHAR(300) NULL,
+  AgentID INT NOT NULL,
+  CONSTRAINT FK_Shop_Agent
+    FOREIGN KEY (AgentID)
+    REFERENCES Agent (ID)
+        ON DELETE CASCADE
+    ON UPDATE CASCADE);
+-- ----------------------------------------------------------------------------
+-- Table dbo.MaterialCountHistory
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS MaterialCountHistory (
+  ID SERIAL PRIMARY KEY,
+  MaterialID INT NOT NULL,
+  ChangeDate TIMESTAMP NOT NULL,
+  CountValue DOUBLE PRECISION NOT NULL,
+  CONSTRAINT FK_MaterialCountHistory_Material
+    FOREIGN KEY (MaterialID)
+    REFERENCES Material (ID)
+        ON DELETE CASCADE
+    ON UPDATE CASCADE);
+-- ----------------------------------------------------------------------------
+-- Table dbo.ProductCostHistory
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS ProductCostHistory (
+  ID SERIAL PRIMARY KEY,
+  ProductID INT NOT NULL,
+  ChangeDate TIMESTAMP NOT NULL,
+  CostValue NUMERIC(10,2) NOT NULL,
+  CONSTRAINT FK_ProductCostHistory_Product
+    FOREIGN KEY (ProductID)
+    REFERENCES Product (ID)
+        ON DELETE CASCADE
+    ON UPDATE CASCADE);
+-- ----------------------------------------------------------------------------
+-- Table dbo.AgentPriorityHistory
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS AgentPriorityHistory (
+  ID SERIAL PRIMARY KEY,
+  AgentID INT NOT NULL,
+  ChangeDate TIMESTAMP NOT NULL,
+  PriorityValue INT NOT NULL,
+  CONSTRAINT FK_AgentPriorityHistory_Agent
+    FOREIGN KEY (AgentID)
+    REFERENCES Agent (ID)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE 
+
+SET CONSTRAINTS ALL IMMEDIATE;
