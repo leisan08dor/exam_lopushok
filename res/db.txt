@@ -156,3 +156,18 @@ CREATE TABLE IF NOT EXISTS AgentPriorityHistory (
     ON UPDATE CASCADE 
 
 SET CONSTRAINTS ALL IMMEDIATE;
+
+CREATE TABLE productmaterial_temp (
+   product_name TEXT,
+   material_name TEXT,
+   count INT
+);
+
+UPDATE productmaterial_temp
+SET product_name = (SELECT id FROM product WHERE title = product_name),
+    material_name = (SELECT id FROM material WHERE title = material_name);
+
+CREATE TABLE users (
+login VARCHAR(50) PRIMARY KEY,
+password  VARCHAR(50) UNIQUE NOT NULL
+);
