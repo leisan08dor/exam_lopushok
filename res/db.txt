@@ -171,3 +171,5 @@ CREATE TABLE users (
 login VARCHAR(50) PRIMARY KEY,
 password  VARCHAR(50) UNIQUE NOT NULL
 );
+
+INSERT INTO users VALUES ('admin', '0000');
